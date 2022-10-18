@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -20,17 +19,31 @@ func setupRouter() *gin.Engine {
 	return router
 }
 
+type ExecuteRequest struct {
+	Command string `json:"command" binding:"required"`
+}
+
+type ExecuteResponse struct {
+	Status  string `json:"status"`
+	Message string `json:"message"`
+}
+
 func executePOST(context *gin.Context) {
-	bodyBytes, _ := ioutil.ReadAll(context.Request.Body)
-	body := string(bodyBytes)
+	request := ExecuteRequest{}
+	if error := context.BindJSON(&request); error != nil {
+		context.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			&ExecuteResponse{
+				"failed",
+				fmt.Sprintf("Can't parse a body: %v", error),
+			},
+		)
+		return
+	}
 
-	fmt.Printf("Received command to execute: [%v]\n", body)
-	message := fmt.Sprintf("Processed result of: [%v]", body)
-
-	context.JSON(http.StatusOK, gin.H{
-		"status":  "success",
-		"message": message,
-	})
+	fmt.Printf("Received command to execute: [%v]\n", request.Command)
+	responseMessage := fmt.Sprintf("Processed result of: [%v]", request.Command)
+	context.JSON(http.StatusOK, &ExecuteResponse{"success", responseMessage})
 }
 
 func main() {
