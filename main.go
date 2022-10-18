@@ -28,22 +28,38 @@ type ExecuteResponse struct {
 	Message string `json:"message"`
 }
 
+func SuccessExecuteResponse(message string) *ExecuteResponse {
+	return &ExecuteResponse{"success", message}
+}
+func FailedExecuteResponse(message string) *ExecuteResponse {
+	return &ExecuteResponse{"failed", message}
+}
+
 func executePOST(context *gin.Context) {
 	request := ExecuteRequest{}
 	if error := context.BindJSON(&request); error != nil {
 		context.AbortWithStatusJSON(
 			http.StatusBadRequest,
-			&ExecuteResponse{
-				"failed",
-				fmt.Sprintf("Can't parse a body: %v", error),
-			},
+			FailedExecuteResponse(fmt.Sprintf("Can't parse a body: %v", error)),
 		)
 		return
 	}
 
-	fmt.Printf("Received command to execute: [%v]\n", request.Command)
-	responseMessage := fmt.Sprintf("Processed result of: [%v]", request.Command)
-	context.JSON(http.StatusOK, &ExecuteResponse{"success", responseMessage})
+	go PersistCommand(request.Command)
+	commandOutput := ExecuteCommand(request.Command)
+	context.JSON(http.StatusOK, SuccessExecuteResponse(commandOutput))
+}
+
+func PersistCommand(command string) {
+	// TODO: add real persisting
+	// TODO: move to appropriate package
+	fmt.Printf("Received command to execute: [%v]\n", command)
+}
+
+func ExecuteCommand(command string) string {
+	// TODO: implement executing
+	// TODO: move to appropriate package
+	return fmt.Sprintf("Processed result of: [%v]", command)
 }
 
 func main() {
