@@ -32,7 +32,7 @@ func executePOST(context *gin.Context) {
 	stdout, stderr, err := exe.ExecuteCommand(request.Command)
 	go persistant.PersistCommand(request.Command, stdout, stderr, err)
 
-	context.JSON(http.StatusOK, dto.SuccessExecuteResponse(stdout, stderr, dto.ErrorDefault(err)))
+	context.JSON(http.StatusOK, dto.SuccessExecuteResponse(stdout, stderr, err))
 }
 
 func main() {

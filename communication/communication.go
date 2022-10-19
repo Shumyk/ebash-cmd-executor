@@ -22,8 +22,8 @@ type ExecuteResponse struct {
 	Error  string `json:"error"`
 }
 
-func SuccessExecuteResponse(stdout, stderr, exitCode string) *ExecuteResponse {
-	return &ExecuteResponse{SUCCESS, stdout, stderr, exitCode}
+func SuccessExecuteResponse(stdout, stderr string, exitCode error) *ExecuteResponse {
+	return &ExecuteResponse{SUCCESS, stdout, stderr, ErrorDefault(exitCode)}
 }
 
 func FailedExecuteBadRequest(context *gin.Context, err string) {
@@ -33,10 +33,10 @@ func FailedExecuteBadRequest(context *gin.Context, err string) {
 	)
 }
 
-func FailedExecuteInternalError(context *gin.Context, stdout, stderr, err string) {
+func FailedExecuteInternalError(context *gin.Context, stdout, stderr string, err error) {
 	context.AbortWithStatusJSON(
 		http.StatusInternalServerError,
-		&ExecuteResponse{FAILED, stdout, stderr, err},
+		&ExecuteResponse{FAILED, stdout, stderr, ErrorDefault(err)},
 	)
 }
 
