@@ -3,6 +3,7 @@ module ebash/cmd-executor
 go 1.19
 
 require (
+	github.com/bmatcuk/go-vagrant v1.6.0
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/gin-gonic/gin v1.8.1 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect

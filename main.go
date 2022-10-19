@@ -10,6 +10,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func main() {
+	go exe.VagrantUp()
+
+	router := setupRouter()
+	router.Run(":8080")
+}
+
 func setupRouter() *gin.Engine {
 	router := gin.Default()
 
@@ -33,9 +40,4 @@ func executePOST(context *gin.Context) {
 	go persistant.PersistCommand(request.Command, stdout, stderr, err)
 
 	context.JSON(http.StatusOK, dto.SuccessExecuteResponse(stdout, stderr, err))
-}
-
-func main() {
-	router := setupRouter()
-	router.Run(":8080")
 }
