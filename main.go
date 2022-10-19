@@ -28,20 +28,18 @@ func executePOST(context *gin.Context) {
 		return
 	}
 
-	go PersistCommand(request.Command)
-
 	stdout, stderr, err := execute.ExecuteCommand(request.Command)
-	if err != nil {
-		failedExecuteInternalError(context, stdout, stderr, err.Error())
-		return
-	}
-	context.JSON(http.StatusOK, successExecuteResponse(stdout, stderr))
+	go PersistCommand(request.Command, stdout, stderr, err)
+	context.JSON(http.StatusOK, successExecuteResponse(stdout, stderr, errorDefault(err)))
 }
 
-func PersistCommand(command string) {
+func PersistCommand(command, stdout, stderr string, err error) {
 	// TODO: add real persisting
 	// TODO: move to appropriate package
-	log.Printf("Received command to execute: [%v]\n", command)
+	log.Printf("Received command to execute: [%v]", command)
+	log.Printf("Stdout:\n%v", stdout)
+	log.Printf("Stderr:\n%v", stderr)
+	log.Printf("Error:\n%v", errorDefault(err))
 }
 
 func main() {
