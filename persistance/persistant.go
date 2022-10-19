@@ -10,5 +10,5 @@ func PersistCommand(command, stdout, stderr string, err error) {
 	log.Printf("Received command to execute: [%v]", command)
 	log.Printf("Stdout:\n%v", stdout)
 	log.Printf("Stderr:\n%v", stderr)
-	log.Printf("Error:\n%v", dto.ErrorDefault(err))
+	log.Printf("Error:\n%v", dto.NillabeError(err))
 }
