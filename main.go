@@ -1,9 +1,10 @@
 package main
 
 import (
-	"ebash/cmd-executor/execute"
+	dto "ebash/cmd-executor/communication"
+	exe "ebash/cmd-executor/execute"
+	persistant "ebash/cmd-executor/persistance"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -22,24 +23,16 @@ func setupRouter() *gin.Engine {
 }
 
 func executePOST(context *gin.Context) {
-	request := ExecuteRequest{}
+	request := dto.ExecuteRequest{}
 	if err := context.BindJSON(&request); err != nil {
-		failedExecuteBadRequest(context, fmt.Sprintf("Can't parse a body: %v", err))
+		dto.FailedExecuteBadRequest(context, fmt.Sprintf("Can't parse a body: %v", err))
 		return
 	}
 
-	stdout, stderr, err := execute.ExecuteCommand(request.Command)
-	go PersistCommand(request.Command, stdout, stderr, err)
-	context.JSON(http.StatusOK, successExecuteResponse(stdout, stderr, errorDefault(err)))
-}
+	stdout, stderr, err := exe.ExecuteCommand(request.Command)
+	go persistant.PersistCommand(request.Command, stdout, stderr, err)
 
-func PersistCommand(command, stdout, stderr string, err error) {
-	// TODO: add real persisting
-	// TODO: move to appropriate package
-	log.Printf("Received command to execute: [%v]", command)
-	log.Printf("Stdout:\n%v", stdout)
-	log.Printf("Stderr:\n%v", stderr)
-	log.Printf("Error:\n%v", errorDefault(err))
+	context.JSON(http.StatusOK, dto.SuccessExecuteResponse(stdout, stderr, dto.ErrorDefault(err)))
 }
 
 func main() {
