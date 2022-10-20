@@ -11,6 +11,14 @@ const (
 	COMMAND_FLAG = "-c"
 )
 
+// TODO: 1. run this on vagrant VMs
+// TODO: 2. figure out a way to keep open ssh connection to VM
+// TODO: 3. implement VMs pool
+// TODO: 4. VMs pool functionality:
+//					a. creating new VMs
+//					b. self-healing
+//					c. concurrent access
+
 func ExecuteCommand(command string) (string, string, error) {
 	cmd, stdout, stderr := prepareCommand(command)
 	log.Printf("Running [%v] command in Bash\n", command)

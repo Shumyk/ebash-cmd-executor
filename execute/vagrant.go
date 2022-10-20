@@ -2,66 +2,85 @@ package execute
 
 import (
 	"log"
+	"sync"
 
 	"github.com/bmatcuk/go-vagrant"
 )
 
-type AliveVagrants struct {
+const (
+	// TODO: path to Vagrant file from properties
+	VAGRANT_PATH  = "/Users/shumyk/codeself/shell/cmd-exe"
+	VAGRANTS_SIZE = 0
+)
+
+// TODO: 1. refactor struct from slice wrapper
+// TODO: 2. vagrant up in loop for several machine
+// TODO: 3. vagrant add boxes
+// TODO: 4. test async vagrant halt with multiple instances
+type AliveVagrant struct {
 	*vagrant.VagrantClient
 }
 
-var vagrants []AliveVagrants = make([]AliveVagrants, 0)
+var vagrants []*AliveVagrant = make([]*AliveVagrant, VAGRANTS_SIZE)
 
 func VagrantUp() {
-	// TODO: path to Vagrant file from properties
-	client, err := vagrant.NewVagrantClient("/Users/shumyk/codeself/shell/cmd-exe")
-	if err != nil {
-		log.Panicf("could not vagrant client ahh!! [%v]", err)
-	}
-	vagrants = append(vagrants, AliveVagrants{client})
+	client, err := vagrant.NewVagrantClient(VAGRANT_PATH)
+	logPanically(err, "create client")
+	vagrants = append(vagrants, &AliveVagrant{client})
 
 	upcmd := client.Up()
 	upcmd.Verbose = true
-	if err := upcmd.Run(); err != nil {
-		log.Panicf("could not vagrant up ahh!! [%v]", err)
-	}
+	logPanically(upcmd.Run(), "up")
 
-	status := client.Status()
-	status.Verbose = true
-	if err := status.Run(); err != nil {
-		log.Panicf("could not vagrant status ahh!! [%v]", err)
-	}
-
-	log.Printf("vagrant status: [%v]", status.MachineName)
-	log.Println(status.StatusResponse.Status)
-	log.Println("vagrant status error:")
-	log.Println(status.StatusResponse.Error)
-	log.Println("vagrant status response:")
-	log.Println(status.StatusResponse.ErrorResponse)
+	go VagrantStatus(client.Status())
 }
 
-func CleanUp(ch chan bool) {
-	for _, wr := range vagrants {
-		log.Printf("starting vagrant halt [%v]", wr.VagrantClient.VagrantfileDir)
-		halt := wr.VagrantClient.Halt()
-		halt.Verbose = true
-		if err := halt.Run(); err != nil {
-			log.Printf("coudn't halt vagrant [%v]", wr.VagrantClient.VagrantfileDir)
-			log.Printf("forcing vagrant halt")
+func VagrantStatus(status *vagrant.StatusCommand) {
+	logPanically(status.Run(), "status")
 
-			forceHalt := wr.VagrantClient.Halt()
-			forceHalt.Verbose = true
-			forceHalt.Force = true
-			if err := forceHalt.Run(); err != nil {
-				log.Printf("coudn't force halt vagrant [%v]", wr.VagrantClient.VagrantfileDir)
-				log.Printf("destroying vagrant")
-
-				destroy := wr.VagrantClient.Destroy()
-				destroy.Verbose = true
-				destroy.Run()
-			}
-		}
+	log.Printf("vagrant status: %v", status.StatusResponse.Status["default"])
+	if status.StatusResponse.Error != nil {
+		log.Println("vagrant status error:")
+		log.Println(status.StatusResponse.Error)
 	}
-	log.Println("successfully halt all vagrants")
+}
+
+func HaltVagrants(ch chan<- bool) {
+	wg := new(sync.WaitGroup)
+	wg.Add(len(vagrants))
+
+	for _, v := range vagrants {
+		go v.DefinitelyHaltVagrant(wg)
+	}
+
+	wg.Wait()
 	ch <- true
+	log.Println("successfully halt all vagrants")
+}
+
+func (v *AliveVagrant) DefinitelyHaltVagrant(wg *sync.WaitGroup) {
+	log.Printf("starting vagrant halt [%v]", v.VagrantClient.VagrantfileDir)
+	halt := v.VagrantClient.Halt()
+	halt.Verbose = true
+
+	if err := halt.Run(); err != nil {
+		log.Printf("coudn't halt vagrant %v", v.VagrantClient.VagrantfileDir)
+		log.Printf("forcing vagrant halt %v", v.VagrantClient.VagrantfileDir)
+		v.forceHaltVagrant()
+	}
+
+	wg.Done()
+}
+
+func (v *AliveVagrant) forceHaltVagrant() {
+	forceHalt := v.VagrantClient.Halt()
+	forceHalt.Verbose = true
+	forceHalt.Force = true
+	logPanically(forceHalt.Run(), "force halt")
+}
+
+func logPanically(err error, action string) {
+	if err != nil {
+		log.Panicf("could not vagrant %v ahh!! [%v]", action, err)
+	}
 }
