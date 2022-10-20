@@ -29,9 +29,10 @@ func main() {
 
 	go listenAndServe(server)
 	<-ctx.Done()
-
+	// halt vagrants
 	vagrantChannel := make(chan bool)
 	go exe.CleanUp(vagrantChannel)
+	// stop context
 	stop()
 	log.Println("shutting down gracefully, press ctrl+c again to kill me ;(")
 
@@ -54,13 +55,14 @@ func listenAndServe(server *http.Server) {
 func setupRouter() *gin.Engine {
 	router := gin.Default()
 
-	router.GET("/ping", func(contex *gin.Context) {
-		contex.String(http.StatusOK, "pong")
-	})
-
+	router.GET("/ping", pingGET)
 	router.POST("/execute", executePOST)
 
 	return router
+}
+
+func pingGET(context *gin.Context) {
+	context.String(http.StatusOK, "pong")
 }
 
 func executePOST(context *gin.Context) {
