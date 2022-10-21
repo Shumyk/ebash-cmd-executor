@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	go exe.VagrantUp()
+	go exe.VagrantsUp()
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
