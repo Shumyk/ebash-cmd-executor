@@ -28,10 +28,7 @@ func VagrantsUp() {
 	aliveVagrant := &AliveVagrant{client}
 	vagrants = append(vagrants, aliveVagrant)
 
-	upcmd := client.Up()
-	upcmd.Verbose = true
-	logPanically(upcmd.Run(), "up")
-
+	aliveVagrant.Up()
 	go aliveVagrant.Status()
 }
 

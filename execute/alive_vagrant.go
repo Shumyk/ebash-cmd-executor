@@ -7,8 +7,16 @@ import (
 	"github.com/bmatcuk/go-vagrant"
 )
 
+// TODO 1: make verbose optional via configs
+
 type AliveVagrant struct {
 	*vagrant.VagrantClient
+}
+
+func (v *AliveVagrant) Up() {
+	up := v.VagrantClient.Up()
+	up.Verbose = true
+	logPanically(up.Run(), "up")
 }
 
 func (v *AliveVagrant) Status() {
