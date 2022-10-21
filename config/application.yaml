@@ -1,0 +1,8 @@
+app:
+  port: 8080
+
+vms:
+  vagrant:
+    vagrantfiles:
+      - '/Users/shumyk/codeself/shell/cmd-exe'
+    verbose: true

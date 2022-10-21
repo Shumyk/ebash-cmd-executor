@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	dto "ebash/cmd-executor/communication"
+	"ebash/cmd-executor/config"
 	exe "ebash/cmd-executor/execute"
 	persistant "ebash/cmd-executor/persistance"
 	"fmt"
@@ -16,6 +17,7 @@ import (
 )
 
 func main() {
+	config.Load()
 	go exe.VagrantsUp()
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
@@ -23,15 +25,18 @@ func main() {
 
 	router := setupRouter()
 	server := &http.Server{
-		Addr:    ":8080",
+		// todo verify column is needed
+		Addr:    ":" + config.GetApp().Port,
 		Handler: router,
 	}
 
 	go listenAndServe(server)
 	<-ctx.Done()
+
 	// halt vagrants
 	haltVagrants := make(chan bool)
 	go exe.HaltVagrants(haltVagrants)
+
 	// stop context
 	stop()
 	log.Println("shutting down gracefully, press ctrl+c again to kill me ;(")
@@ -46,12 +51,6 @@ func main() {
 	log.Println("adios!")
 }
 
-func listenAndServe(server *http.Server) {
-	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatalf("failed to serve: [%v]", err)
-	}
-}
-
 func setupRouter() *gin.Engine {
 	router := gin.Default()
 
@@ -60,6 +59,12 @@ func setupRouter() *gin.Engine {
 	println()
 
 	return router
+}
+
+func listenAndServe(server *http.Server) {
+	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Fatalf("failed to serve: [%v]", err)
+	}
 }
 
 func pingGET(context *gin.Context) {

@@ -1,17 +1,11 @@
 package execute
 
 import (
+	"ebash/cmd-executor/config"
 	"log"
-	"strings"
 	"sync"
 
 	"github.com/bmatcuk/go-vagrant"
-)
-
-const (
-	// TODO: path to Vagrant file from properties
-	VAGRANT_PATHS  = "/Users/shumyk/codeself/shell/cmd-exe"
-	PATH_SEPARATOR = ","
 )
 
 // TODO: 3. vagrant add boxes (?)
@@ -21,8 +15,7 @@ const (
 var vagrants []*AliveVagrant
 
 func VagrantsUp() {
-	paths := strings.Split(VAGRANT_PATHS, PATH_SEPARATOR)
-	for _, path := range paths {
+	for _, path := range config.GetVagrant().Vagrantfiles {
 		go initClient(path)
 	}
 }
