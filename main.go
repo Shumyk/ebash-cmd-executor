@@ -51,6 +51,7 @@ func main() {
 	log.Println("adios!")
 }
 
+// TODO: refactor routing and server stuff
 func setupRouter() *gin.Engine {
 	router := gin.Default()
 
