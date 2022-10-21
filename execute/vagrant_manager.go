@@ -13,7 +13,6 @@ const (
 	VAGRANTS_SIZE = 0
 )
 
-// TODO: 1. refactor struct from slice wrapper
 // TODO: 2. vagrant up in loop for several machine
 // TODO: 3. vagrant add boxes
 // TODO: 4. test async vagrant halt with multiple instances
