@@ -15,7 +15,7 @@ import (
 var vagrants []*AliveVagrant
 
 func VagrantsUp() {
-	for _, path := range config.GetVagrant().Vagrantfiles {
+	for _, path := range config.Vagrant().Vagrantfiles {
 		go initClient(path)
 	}
 }
@@ -35,6 +35,12 @@ func newClient(path string) *vagrant.VagrantClient {
 }
 
 func HaltVagrants(ch chan<- bool) {
+	if !config.Vagrant().Halt {
+		log.Println("vagrant halt is disabled")
+		ch <- false
+		return
+	}
+
 	wg := new(sync.WaitGroup)
 	wg.Add(len(vagrants))
 

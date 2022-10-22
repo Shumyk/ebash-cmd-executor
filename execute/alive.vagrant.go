@@ -14,13 +14,13 @@ type AliveVagrant struct {
 
 func (v *AliveVagrant) Up() {
 	up := v.VagrantClient.Up()
-	up.Verbose = config.GetVagrant().Verbose
+	up.Verbose = config.Vagrant().Verbose
 	logPanically(up.Run(), "up")
 }
 
 func (v *AliveVagrant) Status() {
 	status := v.VagrantClient.Status()
-	status.Verbose = config.GetVagrant().Verbose
+	status.Verbose = config.Vagrant().Verbose
 	logPanically(status.Run(), "status")
 
 	log.Printf("vagrant status: %v", status.StatusResponse.Status["default"])
@@ -42,14 +42,14 @@ func (v *AliveVagrant) DefinitelyHalt(wg *sync.WaitGroup) {
 func (v *AliveVagrant) Halt() error {
 	log.Printf("halting vagrant [%v]", v.VagrantClient.VagrantfileDir)
 	halt := v.VagrantClient.Halt()
-	halt.Verbose = config.GetVagrant().Verbose
+	halt.Verbose = config.Vagrant().Verbose
 	return halt.Run()
 }
 
 func (v *AliveVagrant) ForceHalt() error {
 	log.Printf("force halting vagrant %v", v.VagrantClient.VagrantfileDir)
 	forceHalt := v.VagrantClient.Halt()
-	forceHalt.Verbose = config.GetVagrant().Verbose
+	forceHalt.Verbose = config.Vagrant().Verbose
 	forceHalt.Force = true
 	return forceHalt.Run()
 }

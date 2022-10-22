@@ -8,21 +8,22 @@ import (
 )
 
 type Config struct {
-	App            `yaml:"app"`
-	VirtualMachine `yaml:"vms"`
+	AppConfig            `yaml:"app"`
+	VirtualMachineConfig `yaml:"vms"`
 }
 
-type App struct {
+type AppConfig struct {
 	Port string `yaml:"port"`
 }
 
-type VirtualMachine struct {
-	Vagrant `yaml:"vagrant"`
+type VirtualMachineConfig struct {
+	VagrantConfig `yaml:"vagrant"`
 }
 
-type Vagrant struct {
+type VagrantConfig struct {
 	Vagrantfiles []string `yaml:"vagrantfiles"`
 	Verbose      bool     `yaml:"verbose"`
+	Halt         bool     `yaml:"halt"`
 }
 
 func (c *Config) Load() {
@@ -30,7 +31,7 @@ func (c *Config) Load() {
 	logPanically(err, "read")
 
 	err = yaml.Unmarshal(configFile, &c)
-	logPanically(err, "decode")
+	logPanically(err, "unmarshal")
 
 	log.Println("successfully loaded configurations")
 }

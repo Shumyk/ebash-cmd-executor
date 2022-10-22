@@ -6,10 +6,10 @@ func Load() {
 	config.Load()
 }
 
-func GetApp() App {
-	return config.App
+func App() AppConfig {
+	return config.AppConfig
 }
 
-func GetVagrant() Vagrant {
-	return config.VirtualMachine.Vagrant
+func Vagrant() VagrantConfig {
+	return config.VirtualMachineConfig.VagrantConfig
 }
