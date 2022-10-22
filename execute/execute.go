@@ -2,6 +2,8 @@ package execute
 
 import (
 	"bytes"
+	"ebash/cmd-executor/config"
+	"errors"
 	"fmt"
 	"log"
 	"os/exec"
@@ -21,8 +23,15 @@ const (
 //					c. concurrent access
 
 func ExecuteCommand(command string) *CommandOutput {
-	// return executeCommandHostMachine(command)
-	return executeCommandOnVirtualMachine(command)
+	switch runOn := config.Vms().RunOn; runOn {
+	case "host":
+		return executeCommandHostMachine(command)
+	case "vagrant":
+		return executeCommandOnVirtualMachine(command)
+	default:
+		errMsg := fmt.Sprintf("unknown target machine in configuration: %v", runOn)
+		return &CommandOutput{Error: errors.New(errMsg)}
+	}
 }
 
 func executeCommandOnVirtualMachine(command string) *CommandOutput {
