@@ -5,5 +5,5 @@ vms:
   vagrant:
     vagrantfiles:
       - '/Users/shumyk/codeself/shell/cmd-exe'
-    verbose: true
+    verbose: false
     halt: false

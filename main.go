@@ -25,7 +25,6 @@ func main() {
 
 	router := setupRouter()
 	server := &http.Server{
-		// todo verify column is needed
 		Addr:    ":" + config.App().Port,
 		Handler: router,
 	}

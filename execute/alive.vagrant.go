@@ -30,6 +30,19 @@ func (v *AliveVagrant) Status() {
 	}
 }
 
+func (v *AliveVagrant) SshConfig() {
+	sshConfig := v.VagrantClient.SSHConfig()
+	sshConfig.Verbose = config.Vagrant().Verbose
+	logPanically(sshConfig.Run(), "ssh config")
+
+	configs := sshConfig.SSHConfigResponse.Configs["default"]
+	log.Printf("SSH config [%v]", v.VagrantClient.VagrantfileDir)
+	log.Printf("Host			: %v", configs.HostName)
+	log.Printf("Port			: %v", configs.Port)
+	log.Printf("User			: %v", configs.User)
+	log.Printf("Identity file		: %v", configs.IdentityFile)
+}
+
 func (v *AliveVagrant) DefinitelyHalt(wg *sync.WaitGroup) {
 	if err := v.Halt(); err != nil {
 		log.Printf("coudn't halt vagrant %v", v.VagrantClient.VagrantfileDir)
