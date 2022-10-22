@@ -24,7 +24,7 @@ const (
 
 func ExecuteCommand(command string) *CommandOutput {
 	switch runOn := config.Vms().RunOn; runOn {
-	case "host":
+	case "native":
 		return executeCommandHostMachine(command)
 	case "vagrant":
 		return executeCommandOnVirtualMachine(command)

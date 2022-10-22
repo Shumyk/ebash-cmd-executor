@@ -2,7 +2,7 @@ app:
   port: 8080
 
 vms:
-  # host | vagrant 
+  # native | vagrant 
   runOn: 'vagrant'
   vagrant:
     vagrantfiles:
