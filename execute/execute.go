@@ -20,13 +20,15 @@ const (
 //					b. self-healing
 //					c. concurrent access
 
-func ExecuteCommand(command string) (string, string, error) {
+func ExecuteCommand(command string) *CommandOutput {
 	// return executeCommandHostMachine(command)
 	return executeCommandOnVirtualMachine(command)
 }
 
-func executeCommandOnVirtualMachine(command string) (string, string, error) {
-	return executeCommandHostMachine(prepareVagrantCommand(command))
+func executeCommandOnVirtualMachine(command string) *CommandOutput {
+	output := executeCommandHostMachine(prepareVagrantCommand(command))
+	output.Command = command
+	return output
 }
 
 func prepareVagrantCommand(command string) string {
@@ -37,15 +39,14 @@ func prepareVagrantCommand(command string) string {
 	)
 }
 
-func executeCommandHostMachine(command string) (string, string, error) {
+func executeCommandHostMachine(command string) *CommandOutput {
 	cmd, stdout, stderr := prepareCommand(command)
 
 	log.Printf("Running [%v] command in Bash\n", command)
 	err := cmd.Run()
 	log.Printf("Finnished executing of [%v] command", command)
 
-	// return CommandOutput{stdou.String(), stderr.String(), err}
-	return stdout.String(), stderr.String(), err
+	return &CommandOutput{command, stdout.String(), stderr.String(), err}
 }
 
 func prepareCommand(command string) (*exec.Cmd, *bytes.Buffer, *bytes.Buffer) {
@@ -56,7 +57,8 @@ func prepareCommand(command string) (*exec.Cmd, *bytes.Buffer, *bytes.Buffer) {
 }
 
 type CommandOutput struct {
-	stdout string
-	stderr string
-	err    error
+	Command string
+	Stdout  string
+	Stderr  string
+	Error   error
 }

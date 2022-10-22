@@ -2,13 +2,14 @@ package persistant
 
 import (
 	dto "ebash/cmd-executor/communication"
+	exe "ebash/cmd-executor/execute"
 	"log"
 )
 
-func PersistCommand(command, stdout, stderr string, err error) {
+func PersistCommand(output *exe.CommandOutput) {
 	// TODO: add real persisting
-	log.Printf("Received command to execute: [%v]", command)
-	log.Printf("Stdout:\n%v", stdout)
-	log.Printf("Stderr:\n%v", stderr)
-	log.Printf("Error:\n%v", dto.NillabeError(err))
+	log.Printf("Received command to execute: [%v]", output.Command)
+	log.Printf("Stdout:\n%v", output.Stdout)
+	log.Printf("Stderr:\n%v", output.Stderr)
+	log.Printf("Error:\n%v", dto.NillabeError(output.Error))
 }
