@@ -21,16 +21,17 @@ func VagrantsUp() {
 }
 
 func initClient(path string) {
-	aliveVagrant := &AliveVagrant{newClient(path)}
+	aliveVagrant := &AliveVagrant{VagrantClient: newClient(path)}
 	vagrants = append(vagrants, aliveVagrant)
 
 	aliveVagrant.Up()
+	aliveVagrant.InitSSHSession()
 	aliveVagrant.Status()
 }
 
 func newClient(path string) *vagrant.VagrantClient {
 	client, err := vagrant.NewVagrantClient(path)
-	logPanically(err, "create client")
+	logPanically(err, "vagrant create client")
 	return client
 }
 
@@ -55,6 +56,6 @@ func HaltVagrants(ch chan<- bool) {
 
 func logPanically(err error, action string) {
 	if err != nil {
-		log.Panicf("could not vagrant %v ahh!! [%v]", action, err)
+		log.Panicf("could not %v ahh!! [%v]", action, err)
 	}
 }

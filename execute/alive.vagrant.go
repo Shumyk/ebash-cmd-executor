@@ -6,22 +6,24 @@ import (
 	"sync"
 
 	"github.com/bmatcuk/go-vagrant"
+	"golang.org/x/crypto/ssh"
 )
 
 type AliveVagrant struct {
 	*vagrant.VagrantClient
+	*ssh.Session
 }
 
 func (v *AliveVagrant) Up() {
 	up := v.VagrantClient.Up()
 	up.Verbose = config.Vagrant().Verbose
-	logPanically(up.Run(), "up")
+	logPanically(up.Run(), "vagrant up")
 }
 
 func (v *AliveVagrant) Status() {
 	status := v.VagrantClient.Status()
 	status.Verbose = config.Vagrant().Verbose
-	logPanically(status.Run(), "status")
+	logPanically(status.Run(), "vagrant status")
 
 	log.Printf("vagrant status: %v", status.StatusResponse.Status["default"])
 	if status.StatusResponse.Error != nil {
@@ -30,10 +32,10 @@ func (v *AliveVagrant) Status() {
 	}
 }
 
-func (v *AliveVagrant) SshConfig() {
+func (v *AliveVagrant) SshConfig() *vagrant.SSHConfig {
 	sshConfig := v.VagrantClient.SSHConfig()
 	sshConfig.Verbose = config.Vagrant().Verbose
-	logPanically(sshConfig.Run(), "ssh config")
+	logPanically(sshConfig.Run(), "vagrant ssh config")
 
 	configs := sshConfig.SSHConfigResponse.Configs["default"]
 	log.Printf("SSH config [%v]", v.VagrantClient.VagrantfileDir)
@@ -41,13 +43,14 @@ func (v *AliveVagrant) SshConfig() {
 	log.Printf("Port			: %v", configs.Port)
 	log.Printf("User			: %v", configs.User)
 	log.Printf("Identity file		: %v", configs.IdentityFile)
+	return &configs
 }
 
 func (v *AliveVagrant) DefinitelyHalt(wg *sync.WaitGroup) {
 	if err := v.Halt(); err != nil {
 		log.Printf("coudn't halt vagrant %v", v.VagrantClient.VagrantfileDir)
 		forceErr := v.ForceHalt()
-		logPanically(forceErr, "force halt")
+		logPanically(forceErr, "vagrant force halt")
 	}
 	wg.Done()
 }
