@@ -2,6 +2,7 @@ package execute
 
 import (
 	"ebash/cmd-executor/config"
+	"ebash/cmd-executor/util"
 	"log"
 	"sync"
 
@@ -18,15 +19,15 @@ type AliveVagrant struct {
 func (v *AliveVagrant) Up() {
 	up := v.VagrantClient.Up()
 	up.Verbose = config.Vagrant().Verbose
-	logPanically(up.Run(), "vagrant up")
+	util.Panically(up.Run(), "vagrant up")
 }
 
 func (v *AliveVagrant) Status() {
-	defer timer("vagrant status")()
+	defer util.Timer("vagrant status")()
 
 	status := v.VagrantClient.Status()
 	status.Verbose = config.Vagrant().Verbose
-	logPanically(status.Run(), "vagrant status")
+	util.Panically(status.Run(), "vagrant status")
 
 	log.Printf("vagrant status: %v", status.StatusResponse.Status["default"])
 	if status.StatusResponse.Error != nil {
@@ -38,8 +39,7 @@ func (v *AliveVagrant) Status() {
 func (v *AliveVagrant) DefinitelyHalt(wg *sync.WaitGroup) {
 	if err := v.Halt(); err != nil {
 		log.Printf("coudn't halt vagrant %v", v.VagrantClient.VagrantfileDir)
-		forceErr := v.ForceHalt()
-		logPanically(forceErr, "vagrant force halt")
+		util.Panically(v.ForceHalt(), "vagrant force halt")
 	}
 	wg.Done()
 }
@@ -51,6 +51,7 @@ func (v *AliveVagrant) Halt() error {
 	return halt.Run()
 }
 
+// TODO: maybe creating vagrant command could be abstracted with closure to simplify verbose set
 func (v *AliveVagrant) ForceHalt() error {
 	log.Printf("force halting vagrant %v", v.VagrantClient.VagrantfileDir)
 	forceHalt := v.VagrantClient.Halt()

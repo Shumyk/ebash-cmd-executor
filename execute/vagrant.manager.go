@@ -2,6 +2,7 @@ package execute
 
 import (
 	"ebash/cmd-executor/config"
+	"ebash/cmd-executor/util"
 	"log"
 	"sync"
 
@@ -31,9 +32,7 @@ func initClient(path string) {
 }
 
 func newClient(path string) *vagrant.VagrantClient {
-	client, err := vagrant.NewVagrantClient(path)
-	logPanically(err, "vagrant create client")
-	return client
+	return util.Cautiosly(vagrant.NewVagrantClient(path))("vagrant create client")
 }
 
 func HaltVagrants(ch chan<- bool) {
@@ -53,10 +52,4 @@ func HaltVagrants(ch chan<- bool) {
 	wg.Wait()
 	ch <- true
 	log.Println("successfully halted all vagrants")
-}
-
-func logPanically(err error, action string) {
-	if err != nil {
-		log.Panicf("could not %v ahh!! [%v]", action, err)
-	}
 }

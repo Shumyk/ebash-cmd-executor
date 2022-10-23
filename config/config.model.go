@@ -1,8 +1,9 @@
 package config
 
 import (
-	"io/ioutil"
+	"ebash/cmd-executor/util"
 	"log"
+	"os"
 
 	"gopkg.in/yaml.v2"
 )
@@ -28,17 +29,7 @@ type VagrantConfig struct {
 }
 
 func (c *Config) Load() {
-	configFile, err := ioutil.ReadFile("config/application.yaml")
-	logPanically(err, "read")
-
-	err = yaml.Unmarshal(configFile, &c)
-	logPanically(err, "unmarshal")
-
+	configFile := util.Cautiosly(os.ReadFile("config/application.yaml"))("read config file")
+	util.Panically(yaml.Unmarshal(configFile, &c), "unmarshal config file")
 	log.Println("successfully loaded configurations")
-}
-
-func logPanically(err error, action string) {
-	if err != nil {
-		log.Panicf("could not %v config file: %v", action, err)
-	}
 }
