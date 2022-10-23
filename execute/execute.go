@@ -14,13 +14,12 @@ const (
 	COMMAND_FLAG = "-c"
 )
 
-// TODO: 1. run this on vagrant VMs
-// TODO: 2. figure out a way to keep open ssh connection to VM
 // TODO: 3. implement VMs pool
 // TODO: 4. VMs pool functionality:
 //					a. creating new VMs
 //					b. self-healing
 //					c. concurrent access
+// TODO: 5. ssh pool
 
 func ExecuteCommand(command string) *CommandOutput {
 	switch runOn := config.Vms().RunOn; runOn {
@@ -35,12 +34,17 @@ func ExecuteCommand(command string) *CommandOutput {
 }
 
 func executeCommandOnVirtualMachine(command string) *CommandOutput {
-	output := executeCommandHostMachine(prepareVagrantCommand(command))
-	output.Command = command
-	return output
+	v := vagrants[0] // TODO: this should be changed when vm/ssh pool
+
+	stdout, stderr := &bytes.Buffer{}, &bytes.Buffer{}
+	v.Session.Stdout, v.Session.Stderr = stdout, stderr
+	err := v.Session.Run(command)
+
+	go v.ReinitSSHSession()
+	return &CommandOutput{command, stdout.String(), stderr.String(), err}
 }
 
-func prepareVagrantCommand(command string) string {
+func prepareVagrantSshCommand(command string) string {
 	return fmt.Sprintf(
 		"(cd %v; vagrant ssh -c \"%v\")",
 		vagrants[0].VagrantClient.VagrantfileDir,

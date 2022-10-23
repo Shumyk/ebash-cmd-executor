@@ -11,6 +11,7 @@ import (
 
 type AliveVagrant struct {
 	*vagrant.VagrantClient
+	*ssh.Client
 	*ssh.Session
 }
 
@@ -21,6 +22,8 @@ func (v *AliveVagrant) Up() {
 }
 
 func (v *AliveVagrant) Status() {
+	defer timer("vagrant status")()
+
 	status := v.VagrantClient.Status()
 	status.Verbose = config.Vagrant().Verbose
 	logPanically(status.Run(), "vagrant status")
@@ -30,20 +33,6 @@ func (v *AliveVagrant) Status() {
 		log.Println("vagrant status error:")
 		log.Println(status.StatusResponse.Error)
 	}
-}
-
-func (v *AliveVagrant) SshConfig() *vagrant.SSHConfig {
-	sshConfig := v.VagrantClient.SSHConfig()
-	sshConfig.Verbose = config.Vagrant().Verbose
-	logPanically(sshConfig.Run(), "vagrant ssh config")
-
-	configs := sshConfig.SSHConfigResponse.Configs["default"]
-	log.Printf("SSH config [%v]", v.VagrantClient.VagrantfileDir)
-	log.Printf("Host			: %v", configs.HostName)
-	log.Printf("Port			: %v", configs.Port)
-	log.Printf("User			: %v", configs.User)
-	log.Printf("Identity file		: %v", configs.IdentityFile)
-	return &configs
 }
 
 func (v *AliveVagrant) DefinitelyHalt(wg *sync.WaitGroup) {
