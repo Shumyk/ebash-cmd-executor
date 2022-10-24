@@ -53,9 +53,11 @@ func (v *AliveVagrant) initSSHSessions() {
 	log.Printf("initiated %v SSH sessions", v.Sessions.Size())
 }
 
-func (v *AliveVagrant) Session() *ssh.Session {
+func (v *AliveVagrant) Session() (session *ssh.Session, close func()) {
 	go v.appendNewSession()
-	return v.Sessions.Poll()
+	session = v.Sessions.Poll()
+	close = func() { go session.Close() }
+	return session, close
 }
 
 func (v *AliveVagrant) appendNewSession() {
