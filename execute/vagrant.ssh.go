@@ -57,7 +57,7 @@ func (v *AliveVagrant) Session() (session *ssh.Session, close func()) {
 	go v.appendNewSession()
 	session = v.Sessions.Poll()
 	close = func() { go session.Close() }
-	return session, close
+	return
 }
 
 func (v *AliveVagrant) appendNewSession() {
