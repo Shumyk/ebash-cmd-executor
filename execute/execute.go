@@ -20,6 +20,8 @@ const (
 //					b. self-healing
 //					c. concurrent access
 // TODO: 5. ssh pool
+//			i. fix limit of 10 open ssh session in vagrant
+//			ii. added check to create session when no available in ssh pool
 
 func ExecuteCommand(command string) *CommandOutput {
 	switch runOn := config.Vms().RunOn; runOn {
