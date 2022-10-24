@@ -22,16 +22,16 @@ func VagrantsUp() {
 }
 
 func initClient(path string) {
-	aliveVagrant := &AliveVagrant{VagrantClient: newClient(path)}
+	aliveVagrant := &AliveVagrant{VagrantClient: newVagrantClient(path)}
 	vagrants = append(vagrants, aliveVagrant)
 
 	aliveVagrant.Up()
-	aliveVagrant.preInitSSHSession(aliveVagrant.SSHConfig())
-	aliveVagrant.InitSSHSession()
+	aliveVagrant.initSSHClient(aliveVagrant.SSHConfig())
+	aliveVagrant.initSSHSession()
 	aliveVagrant.Status()
 }
 
-func newClient(path string) *vagrant.VagrantClient {
+func newVagrantClient(path string) *vagrant.VagrantClient {
 	return util.Cautiosly(vagrant.NewVagrantClient(path))("vagrant create client")
 }
 

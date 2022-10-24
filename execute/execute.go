@@ -40,7 +40,7 @@ func executeCommandOnVirtualMachine(command string) *CommandOutput {
 	v.Session.Stdout, v.Session.Stderr = stdout, stderr
 	err := v.Session.Run(command)
 
-	go v.ReinitSSHSession()
+	go v.reinitSSHSession()
 	return &CommandOutput{command, stdout.String(), stderr.String(), err}
 }
 

@@ -29,7 +29,7 @@ func (v *AliveVagrant) SSHConfig() *vagrant.SSHConfig {
 	return &sshConfigs
 }
 
-func (v *AliveVagrant) preInitSSHSession(sshConfig *vagrant.SSHConfig) {
+func (v *AliveVagrant) initSSHClient(sshConfig *vagrant.SSHConfig) {
 	defer util.Timer("preInitSSHSession")()
 
 	privateKey := util.Cautiosly(os.ReadFile(sshConfig.IdentityFile))("read vagrant indentity file")
@@ -43,15 +43,15 @@ func (v *AliveVagrant) preInitSSHSession(sshConfig *vagrant.SSHConfig) {
 	v.Client = util.Cautiosly(ssh.Dial("tcp", buildAddr(sshConfig), clientConf))("ssh dial vagrant")
 }
 
-func (v *AliveVagrant) InitSSHSession() {
+func (v *AliveVagrant) initSSHSession() {
 	defer util.Timer("initializing vagrant ssh session")()
 	v.Session = util.Cautiosly(v.Client.NewSession())("create new vagrant session")
 }
 
-func (v *AliveVagrant) ReinitSSHSession() {
+func (v *AliveVagrant) reinitSSHSession() {
 	defer util.Timer("ReinitSSHSession")()
 	v.Session.Close()
-	v.InitSSHSession()
+	v.initSSHSession()
 }
 
 func buildAddr(c *vagrant.SSHConfig) string {
