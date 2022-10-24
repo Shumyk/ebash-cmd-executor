@@ -18,8 +18,9 @@ type AppConfig struct {
 }
 
 type VirtualMachineConfig struct {
-	RunOn         string `yaml:"runOn"`
-	VagrantConfig `yaml:"vagrant"`
+	RunOn           string `yaml:"runOn"`
+	SessionPoolSize int    `yaml:"sessionPoolSize"`
+	VagrantConfig   `yaml:"vagrant"`
 }
 
 type VagrantConfig struct {

@@ -36,11 +36,13 @@ func ExecuteCommand(command string) *CommandOutput {
 func executeCommandOnVirtualMachine(command string) *CommandOutput {
 	v := vagrants[0] // TODO: this should be changed when vm/ssh pool
 
-	stdout, stderr := &bytes.Buffer{}, &bytes.Buffer{}
-	v.Session.Stdout, v.Session.Stderr = stdout, stderr
-	err := v.Session.Run(command)
+	session := v.Session()
+	defer func() { go session.Close() }()
 
-	go v.reinitSSHSession()
+	stdout, stderr := &bytes.Buffer{}, &bytes.Buffer{}
+	session.Stdout, session.Stderr = stdout, stderr
+	err := session.Run(command)
+
 	return &CommandOutput{command, stdout.String(), stderr.String(), err}
 }
 

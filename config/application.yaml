@@ -4,6 +4,7 @@ app:
 vms:
   # native | vagrant 
   runOn: 'vagrant'
+  sessionPoolSize: 10
   vagrant:
     vagrantfiles:
       - '/Users/shumyk/codeself/shell/cmd-exe'

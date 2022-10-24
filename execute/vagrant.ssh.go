@@ -43,15 +43,28 @@ func (v *AliveVagrant) initSSHClient(sshConfig *vagrant.SSHConfig) {
 	v.Client = util.Cautiosly(ssh.Dial("tcp", buildAddr(sshConfig), clientConf))("ssh dial vagrant")
 }
 
-func (v *AliveVagrant) initSSHSession() {
-	defer util.Timer("initializing vagrant ssh session")()
-	v.Session = util.Cautiosly(v.Client.NewSession())("create new vagrant session")
+func (v *AliveVagrant) initSSHSessions() {
+	defer util.Timer("initializing vagrant ssh sessions")()
+
+	v.Sessions = new(util.Queue[*ssh.Session])
+	for v.Sessions.Size() < config.Vms().SessionPoolSize {
+		v.appendNewSession()
+	}
+	log.Printf("initiated %v SSH sessions", v.Sessions.Size())
 }
 
-func (v *AliveVagrant) reinitSSHSession() {
-	defer util.Timer("ReinitSSHSession")()
-	v.Session.Close()
-	v.initSSHSession()
+func (v *AliveVagrant) Session() *ssh.Session {
+	go v.appendNewSession()
+	return v.Sessions.Poll()
+}
+
+func (v *AliveVagrant) appendNewSession() {
+	log.Printf("appending new session")
+	v.Sessions.Add(v.newSession())
+}
+
+func (v *AliveVagrant) newSession() *ssh.Session {
+	return util.Cautiosly(v.Client.NewSession())("create new vagrant session")
 }
 
 func buildAddr(c *vagrant.SSHConfig) string {
