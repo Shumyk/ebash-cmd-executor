@@ -26,7 +26,7 @@ func initClient(path string) {
 	vagrants = append(vagrants, aliveVagrant)
 
 	aliveVagrant.Up()
-	aliveVagrant.preInitSSHSession(aliveVagrant.SshConfig())
+	aliveVagrant.preInitSSHSession(aliveVagrant.SSHConfig())
 	aliveVagrant.InitSSHSession()
 	aliveVagrant.Status()
 }
