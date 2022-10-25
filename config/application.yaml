@@ -10,3 +10,6 @@ vms:
       - '/Users/shumyk/codeself/shell/cmd-exe'
     verbose: false
     halt: false
+
+persistance:
+  enabled: false

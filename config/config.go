@@ -17,3 +17,7 @@ func Vms() VirtualMachineConfig {
 func Vagrant() VagrantConfig {
 	return config.VirtualMachineConfig.VagrantConfig
 }
+
+func Persistance() PersistanceConfig {
+	return config.PersistanceConfig
+}

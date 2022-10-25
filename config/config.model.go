@@ -11,6 +11,7 @@ import (
 type Config struct {
 	AppConfig            `yaml:"app"`
 	VirtualMachineConfig `yaml:"vms"`
+	PersistanceConfig    `yaml:"persistance"`
 }
 
 type AppConfig struct {
@@ -27,6 +28,10 @@ type VagrantConfig struct {
 	Vagrantfiles []string `yaml:"vagrantfiles"`
 	Verbose      bool     `yaml:"verbose"`
 	Halt         bool     `yaml:"halt"`
+}
+
+type PersistanceConfig struct {
+	Enabled bool `yaml:"enabled"`
 }
 
 func (c *Config) Load() {

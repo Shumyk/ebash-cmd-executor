@@ -66,6 +66,7 @@ func replaceSession(s *ssh.Session, v *AliveVagrant) func() {
 			session, err := v.Client.NewSession()
 			if err != nil {
 				log.Printf("Error occured during recreating session: %v", err)
+				log.Printf("Size of SSH pool: %v", v.Sessions.Size())
 				// TODO: add mechanism to track such cases and automaticaly fulfill missing sessions
 				return
 			}
