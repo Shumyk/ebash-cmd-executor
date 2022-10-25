@@ -27,7 +27,6 @@ func initClient(path string) {
 
 	aliveVagrant.Up()
 	aliveVagrant.initSSHClient(aliveVagrant.SSHConfig())
-	aliveVagrant.initSSHSessions()
 	// aliveVagrant.Status()
 }
 

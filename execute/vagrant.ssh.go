@@ -3,9 +3,7 @@ package execute
 import (
 	"ebash/cmd-executor/config"
 	"ebash/cmd-executor/util"
-	"fmt"
 	"log"
-	"os"
 
 	"github.com/bmatcuk/go-vagrant"
 	"golang.org/x/crypto/ssh"
@@ -29,60 +27,14 @@ func (v *AliveVagrant) SSHConfig() *vagrant.SSHConfig {
 	return &sshConfigs
 }
 
-func (v *AliveVagrant) initSSHClient(sshConfig *vagrant.SSHConfig) {
-	defer util.Timer("preInitSSHSession")()
-
-	privateKey := util.Cautiosly(os.ReadFile(sshConfig.IdentityFile))("read vagrant indentity file")
-	signer := util.Cautiosly(ssh.ParsePrivateKey(privateKey))("parse vagrant private key")
-
-	clientConf := &ssh.ClientConfig{
-		User:            sshConfig.User,
-		Auth:            []ssh.AuthMethod{ssh.PublicKeys(signer)},
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-	}
-	v.Client = util.Cautiosly(ssh.Dial("tcp", buildAddr(sshConfig), clientConf))("ssh dial vagrant")
+func (v *AliveVagrant) initSSHClient(c *vagrant.SSHConfig) {
+	v.Client = CreateSSHClient(c.IdentityFile, c.User, c.HostName, c.Port)
 }
 
-func (v *AliveVagrant) initSSHSessions() {
-	defer util.Timer("initializing vagrant ssh sessions")()
-
-	v.Sessions = new(util.Queue[*ssh.Session])
-	for v.Sessions.Size() < config.Vms().SessionPoolSize {
-		v.appendNewSession()
-	}
-	log.Printf("initiated %v SSH sessions", v.Sessions.Size())
-}
-
-func (v *AliveVagrant) Session() (session *ssh.Session, close func()) {
-	session = v.Sessions.Poll()
-	return session, replaceSession(session, v)
-}
-
-func replaceSession(s *ssh.Session, v *AliveVagrant) func() {
-	return func() {
-		go func() {
-			s.Close()
-
-			session, err := v.Client.NewSession()
-			if err != nil {
-				log.Printf("Error occured during recreating session: %v", err)
-				log.Printf("Size of SSH pool: %v", v.Sessions.Size())
-				// TODO: add mechanism to track such cases and automaticaly fulfill missing sessions
-				return
-			}
-			v.Sessions.Add(session)
-		}()
-	}
-}
-
-func (v *AliveVagrant) appendNewSession() {
-	v.Sessions.Add(v.newSession())
+func (v *AliveVagrant) Session() *ssh.Session {
+	return v.newSession()
 }
 
 func (v *AliveVagrant) newSession() *ssh.Session {
 	return util.Cautiosly(v.Client.NewSession())("create new vagrant session")
-}
-
-func buildAddr(c *vagrant.SSHConfig) string {
-	return fmt.Sprintf("%v:%v", c.HostName, c.Port)
 }

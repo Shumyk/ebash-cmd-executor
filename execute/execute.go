@@ -19,9 +19,6 @@ const (
 //					a. creating new VMs
 //					b. self-healing
 //					c. concurrent access
-// TODO: 5. ssh pool
-//			i. fix limit of 10 open ssh session in vagrant
-//			ii. added check to create session when no available in ssh pool
 
 func ExecuteCommand(command string) *CommandOutput {
 	switch runOn := config.Vms().RunOn; runOn {
@@ -31,15 +28,16 @@ func ExecuteCommand(command string) *CommandOutput {
 		return executeCommandOnVirtualMachine(command)
 	default:
 		errMsg := fmt.Sprintf("unknown target machine in configuration: %v", runOn)
+		log.Panic(errMsg)
 		return &CommandOutput{Error: errors.New(errMsg)}
 	}
 }
 
 func executeCommandOnVirtualMachine(command string) *CommandOutput {
-	v := vagrants[0] // TODO: this should be changed when vm/ssh pool
+	v := vagrants[0] // TODO: this should be changed when vm pool
 
-	session, close := v.Session()
-	defer close()
+	session := v.Session()
+	defer session.Close()
 
 	stdout, stderr := &bytes.Buffer{}, &bytes.Buffer{}
 	session.Stdout, session.Stderr = stdout, stderr

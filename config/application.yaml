@@ -4,7 +4,9 @@ app:
 vms:
   # native | vagrant 
   runOn: 'vagrant'
-  sessionPoolSize: 8
+  # ssh session pool size wasn't briliant idea as there was no performance improvement,
+  # but a lot of code complexity. look at these lines commit to see ssh pool related code
+  # sessionPoolSize: 8 
   vagrant:
     vagrantfiles:
       - '/Users/shumyk/codeself/shell/cmd-exe'

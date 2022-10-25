@@ -13,7 +13,6 @@ import (
 type AliveVagrant struct {
 	*vagrant.VagrantClient
 	*ssh.Client
-	Sessions *util.Queue[*ssh.Session]
 }
 
 func (v *AliveVagrant) Up() {
