@@ -54,14 +54,27 @@ func (v *AliveVagrant) initSSHSessions() {
 }
 
 func (v *AliveVagrant) Session() (session *ssh.Session, close func()) {
-	go v.appendNewSession()
 	session = v.Sessions.Poll()
-	close = func() { go session.Close() }
-	return
+	return session, replaceSession(session, v)
+}
+
+func replaceSession(s *ssh.Session, v *AliveVagrant) func() {
+	return func() {
+		go func() {
+			s.Close()
+
+			session, err := v.Client.NewSession()
+			if err != nil {
+				log.Printf("Error occured during recreating session: %v", err)
+				// TODO: add mechanism to track such cases and automaticaly fulfill missing sessions
+				return
+			}
+			v.Sessions.Add(session)
+		}()
+	}
 }
 
 func (v *AliveVagrant) appendNewSession() {
-	log.Printf("appending new session")
 	v.Sessions.Add(v.newSession())
 }
 
