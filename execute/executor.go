@@ -28,6 +28,9 @@ func ProvideExecutor() Executer {
 		singletonExecutor = NewVagrantExecutor()
 	case "vagrant-ssh":
 		singletonExecutor = NewVagrantSSHExecutor()
+	case "docker":
+		// TODO
+		panic("NOT IMPLEMENTED: DOCKER EXECUTOR")
 	default:
 		panic("invalid option of vms.runOn: " + runOn)
 	}
