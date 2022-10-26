@@ -13,6 +13,12 @@ import (
 // TODO: 4. test async vagrant halt with multiple instances
 
 // TODO: 5. probably move vagrant slice to pool object
+// TODO: 5. implement VMs pool
+// TODO: 7. VMs pool functionality:
+//
+//	a. creating new VMs
+//	b. self-healing
+//	c. concurrent access
 var vagrants []*AliveVagrant
 
 func VagrantsUp() {

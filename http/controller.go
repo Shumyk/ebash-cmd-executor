@@ -2,13 +2,15 @@ package http
 
 import (
 	dto "ebash/cmd-executor/communication"
-	exe "ebash/cmd-executor/execute"
+	"ebash/cmd-executor/execute"
 	persistant "ebash/cmd-executor/persistance"
 	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
+
+var executor execute.Executer = execute.ProvideExecutor()
 
 func pingGET(context *gin.Context) {
 	context.String(http.StatusOK, "pong")
@@ -21,7 +23,7 @@ func executePOST(context *gin.Context) {
 		return
 	}
 
-	output := exe.ExecuteCommand(request.Command)
+	output := executor.Execute(request.Command)
 	go persistant.PersistCommand(output)
 
 	context.JSON(http.StatusOK, dto.SuccessExecuteResponse(output))
