@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"ebash/cmd-executor/config"
 	exe "ebash/cmd-executor/execute"
 	"ebash/cmd-executor/http"
 	"log"
@@ -11,7 +10,6 @@ import (
 )
 
 func main() {
-	config.Load()
 	go exe.VagrantsUp()
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)

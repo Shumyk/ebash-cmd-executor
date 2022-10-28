@@ -1,10 +1,6 @@
 package config
 
-var config Config
-
-func Load() {
-	config.Load()
-}
+var config *Config = Load()
 
 func App() AppConfig {
 	return config.AppConfig
@@ -18,6 +14,6 @@ func Vagrant() VagrantConfig {
 	return config.VirtualMachineConfig.VagrantConfig
 }
 
-func Persistance() PersistanceConfig {
-	return config.PersistanceConfig
+func Persistence() PersistenceConfig {
+	return config.PersistenceConfig
 }

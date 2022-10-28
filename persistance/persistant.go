@@ -9,7 +9,7 @@ import (
 
 func PersistCommand(output *exe.CommandOutput) {
 	// TODO: add real persisting
-	if !config.Persistance().Enabled {
+	if !config.Persistence().Enabled {
 		return
 	}
 	log.Printf("Received command to persist: [%v]", output.Command)

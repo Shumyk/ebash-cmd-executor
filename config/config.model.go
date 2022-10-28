@@ -11,7 +11,7 @@ import (
 type Config struct {
 	AppConfig            `yaml:"app"`
 	VirtualMachineConfig `yaml:"vms"`
-	PersistanceConfig    `yaml:"persistance"`
+	PersistenceConfig    `yaml:"persistence"`
 }
 
 type AppConfig struct {
@@ -30,12 +30,14 @@ type VagrantConfig struct {
 	Halt         bool     `yaml:"halt"`
 }
 
-type PersistanceConfig struct {
+type PersistenceConfig struct {
 	Enabled bool `yaml:"enabled"`
 }
 
-func (c *Config) Load() {
+func Load() *Config {
 	configFile := util.Cautiosly(os.ReadFile("config/application.yaml"))("read config file")
-	util.Panically(yaml.Unmarshal(configFile, &c), "unmarshal config file")
+	config := &Config{}
+	util.Panically(yaml.Unmarshal(configFile, config), "unmarshal config file")
 	log.Println("successfully loaded configurations")
+	return config
 }
