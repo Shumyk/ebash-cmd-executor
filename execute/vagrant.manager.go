@@ -19,17 +19,23 @@ import (
 //	a. creating new VMs
 //	b. self-healing
 //	c. concurrent access
-var vagrants []*AliveVagrant
+type VagrantManager struct {
+	vagrants []*AliveVagrant
+}
 
-func VagrantsUp() {
+func NewVagrantManager() *VagrantManager {
+	return new(VagrantManager)
+}
+
+func (vm *VagrantManager) BringUpMachines() {
 	for _, path := range config.Vagrant().Vagrantfiles {
-		go initClient(path)
+		go initClient(vm, path)
 	}
 }
 
-func initClient(path string) {
+func initClient(vm *VagrantManager, path string) {
 	aliveVagrant := &AliveVagrant{VagrantClient: newVagrantClient(path)}
-	vagrants = append(vagrants, aliveVagrant)
+	vm.vagrants = append(vm.vagrants, aliveVagrant)
 
 	aliveVagrant.Up()
 	aliveVagrant.initSSHClient(aliveVagrant.SSHConfig())
@@ -40,7 +46,7 @@ func newVagrantClient(path string) *vagrant.VagrantClient {
 	return util.Cautiosly(vagrant.NewVagrantClient(path))("vagrant create client")
 }
 
-func HaltVagrants(ch chan<- bool) {
+func (vm *VagrantManager) Shutdown(ch chan<- bool) {
 	if !config.Vagrant().Halt {
 		log.Println("vagrant halt is disabled")
 		ch <- false
@@ -48,9 +54,9 @@ func HaltVagrants(ch chan<- bool) {
 	}
 
 	wg := new(sync.WaitGroup)
-	wg.Add(len(vagrants))
+	wg.Add(len(vm.vagrants))
 
-	for _, v := range vagrants {
+	for _, v := range vm.vagrants {
 		go v.DefinitelyHalt(wg)
 	}
 

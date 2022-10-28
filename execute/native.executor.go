@@ -6,6 +6,6 @@ func (e *NativeExecutor) Execute(command string) *CommandOutput {
 	return bash(command)
 }
 
-func NewNativeExecutor() Executer {
+func NewNativeExecutor() Executor {
 	return new(NativeExecutor)
 }

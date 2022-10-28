@@ -10,7 +10,8 @@ import (
 )
 
 func main() {
-	go exe.VagrantsUp()
+	exeManager := exe.InitializeExecutors()
+	go exeManager.BringUpMachines()
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	server := http.Server()
@@ -18,7 +19,7 @@ func main() {
 
 	// halt vagrants
 	haltVagrants := make(chan bool)
-	go exe.HaltVagrants(haltVagrants)
+	go exeManager.Shutdown(haltVagrants)
 
 	// stop context
 	stop()

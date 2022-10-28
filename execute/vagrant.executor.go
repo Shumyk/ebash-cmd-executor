@@ -4,10 +4,12 @@ import (
 	"bytes"
 )
 
-type VagrantExecutor struct{}
+type VagrantExecutor struct {
+	manager *VagrantManager
+}
 
 func (e *VagrantExecutor) Execute(command string) *CommandOutput {
-	v := vagrants[0] // TODO: this should be changed when vm pool
+	v := e.manager.vagrants[0] // TODO: this should be changed when vm pool
 
 	session := v.Session()
 	defer session.Close()
@@ -19,6 +21,6 @@ func (e *VagrantExecutor) Execute(command string) *CommandOutput {
 	return &CommandOutput{command, stdout.String(), stderr.String(), err}
 }
 
-func NewVagrantExecutor() Executer {
-	return new(VagrantExecutor)
+func NewVagrantExecutor(manager *VagrantManager) *VagrantExecutor {
+	return &VagrantExecutor{manager}
 }

@@ -50,7 +50,7 @@ func (v *AliveVagrant) Halt() error {
 	return halt.Run()
 }
 
-// TODO: maybe creating vagrant command could be abstracted with closure to simplify verbose set
+// ForceHalt TODO: maybe creating vagrant command could be abstracted with closure to simplify verbose set
 func (v *AliveVagrant) ForceHalt() error {
 	log.Printf("force halting vagrant %v", v.VagrantClient.VagrantfileDir)
 	forceHalt := v.VagrantClient.Halt()
