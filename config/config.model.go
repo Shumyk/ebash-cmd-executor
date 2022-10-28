@@ -34,7 +34,7 @@ type PersistenceConfig struct {
 	Enabled bool `yaml:"enabled"`
 }
 
-func Load() *Config {
+func load() *Config {
 	configFile := util.Cautiosly(os.ReadFile("config/application.yaml"))("read config file")
 	config := &Config{}
 	util.Panically(yaml.Unmarshal(configFile, config), "unmarshal config file")

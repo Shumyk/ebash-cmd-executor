@@ -1,6 +1,6 @@
 package config
 
-var config *Config = Load()
+var config *Config = load()
 
 func App() AppConfig {
 	return config.AppConfig
