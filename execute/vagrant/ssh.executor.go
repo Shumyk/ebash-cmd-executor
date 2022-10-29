@@ -1,14 +1,13 @@
 package vagrant
 
 import (
-	"ebash/cmd-executor/execute/abstract"
 	"ebash/cmd-executor/execute/common"
 	"fmt"
 )
 
 type SSHExecutor struct{ *Manager }
 
-func (e *SSHExecutor) Execute(command string) *abstract.CommandOutput {
+func (e *SSHExecutor) Execute(command string) *common.CommandOutput {
 	sshCommand := fmt.Sprintf(
 		"(cd %v; vagrant ssh -c \"%v\")",
 		e.vagrants[0].VagrantClient.VagrantfileDir,

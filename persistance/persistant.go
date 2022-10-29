@@ -3,7 +3,7 @@ package persistant
 import (
 	dto "ebash/cmd-executor/communication"
 	"ebash/cmd-executor/config"
-	exe "ebash/cmd-executor/execute/abstract"
+	exe "ebash/cmd-executor/execute/common"
 	"log"
 )
 

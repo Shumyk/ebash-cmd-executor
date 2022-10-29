@@ -2,12 +2,12 @@ package vagrant
 
 import (
 	"bytes"
-	"ebash/cmd-executor/execute/abstract"
+	"ebash/cmd-executor/execute/common"
 )
 
 type Executor struct{ *Manager }
 
-func (e *Executor) Execute(command string) *abstract.CommandOutput {
+func (e *Executor) Execute(command string) *common.CommandOutput {
 	v := e.vagrants[0] // TODO: this should be changed when vm pool
 
 	session := v.Session()
@@ -17,5 +17,5 @@ func (e *Executor) Execute(command string) *abstract.CommandOutput {
 	session.Stdout, session.Stderr = stdout, stderr
 	err := session.Run(command)
 
-	return &abstract.CommandOutput{Command: command, Stdout: stdout.String(), Stderr: stderr.String(), Error: err}
+	return &common.CommandOutput{Command: command, Stdout: stdout.String(), Stderr: stderr.String(), Error: err}
 }

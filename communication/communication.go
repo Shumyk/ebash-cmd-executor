@@ -1,7 +1,7 @@
 package communication
 
 import (
-	"ebash/cmd-executor/execute/abstract"
+	"ebash/cmd-executor/execute/common"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -23,7 +23,7 @@ type ExecuteResponse struct {
 	Error  string `json:"error"`
 }
 
-func SuccessExecuteResponse(output *abstract.CommandOutput) *ExecuteResponse {
+func SuccessExecuteResponse(output *common.CommandOutput) *ExecuteResponse {
 	return &ExecuteResponse{SUCCESS, output.Stdout, output.Stderr, NillabeError(output.Error)}
 }
 

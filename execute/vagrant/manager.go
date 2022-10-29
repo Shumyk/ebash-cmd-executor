@@ -20,7 +20,7 @@ import (
 //	b. self-healing
 //	c. concurrent access
 type Manager struct {
-	vagrants []*AliveVagrant
+	vagrants []*aliveVagrant
 }
 
 func (vm *Manager) BringUpMachines() {
@@ -30,7 +30,7 @@ func (vm *Manager) BringUpMachines() {
 }
 
 func initClient(vm *Manager, path string) {
-	aliveVagrant := &AliveVagrant{VagrantClient: newVagrantClient(path)}
+	aliveVagrant := &aliveVagrant{VagrantClient: newVagrantClient(path)}
 	vm.vagrants = append(vm.vagrants, aliveVagrant)
 
 	aliveVagrant.Up()

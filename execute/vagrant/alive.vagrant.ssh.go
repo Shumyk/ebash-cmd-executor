@@ -10,7 +10,7 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-func (v *AliveVagrant) SSHConfig() *vagrant.SSHConfig {
+func (v *aliveVagrant) SSHConfig() *vagrant.SSHConfig {
 	defer util.Timer("gathering vagrant ssh config")()
 
 	sshConfig := v.VagrantClient.SSHConfig()
@@ -28,10 +28,10 @@ func (v *AliveVagrant) SSHConfig() *vagrant.SSHConfig {
 	return &sshConfigs
 }
 
-func (v *AliveVagrant) initSSHClient(c *vagrant.SSHConfig) {
+func (v *aliveVagrant) initSSHClient(c *vagrant.SSHConfig) {
 	v.Client = common.CreateSSHClient(c.IdentityFile, c.User, c.HostName, c.Port)
 }
 
-func (v *AliveVagrant) Session() *ssh.Session {
+func (v *aliveVagrant) Session() *ssh.Session {
 	return util.Cautiosly(v.Client.NewSession())("create new vagrant session")
 }

@@ -2,7 +2,6 @@ package common
 
 import (
 	"bytes"
-	"ebash/cmd-executor/execute/abstract"
 	"log"
 	"os/exec"
 )
@@ -12,14 +11,14 @@ const (
 	CommandFlag = "-c"
 )
 
-func Bash(command string) *abstract.CommandOutput {
+func Bash(command string) *CommandOutput {
 	cmd, stdout, stderr := prepareCommand(command)
 
 	log.Printf("Running [%v] command on local machine\n", command)
 	err := cmd.Run()
 	log.Printf("Finnished executing of [%v] command", command)
 
-	return &abstract.CommandOutput{command, stdout.String(), stderr.String(), err}
+	return &CommandOutput{command, stdout.String(), stderr.String(), err}
 }
 
 func prepareCommand(command string) (*exec.Cmd, *bytes.Buffer, *bytes.Buffer) {

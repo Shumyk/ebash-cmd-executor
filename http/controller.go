@@ -3,7 +3,6 @@ package http
 import (
 	dto "ebash/cmd-executor/communication"
 	"ebash/cmd-executor/execute"
-	"ebash/cmd-executor/execute/abstract"
 	persistent "ebash/cmd-executor/persistance"
 	"fmt"
 	"net/http"
@@ -11,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var executor abstract.Executor
+var executor execute.Executor
 
 func setup() {
 	executor = execute.ProvideExecutor()

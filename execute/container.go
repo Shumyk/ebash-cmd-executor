@@ -2,21 +2,20 @@ package execute
 
 import (
 	"ebash/cmd-executor/config"
-	"ebash/cmd-executor/execute/abstract"
 	"ebash/cmd-executor/execute/common"
 	"ebash/cmd-executor/execute/native"
 	"ebash/cmd-executor/execute/vagrant"
 )
 
-var manager abstract.Manager
-var executor abstract.Executor
+var manager Manager
+var executor Executor
 
-func ProvideExecutor() abstract.Executor {
+func ProvideExecutor() Executor {
 	initialize()
 	return executor
 }
 
-func ProvideManager() abstract.Manager {
+func ProvideManager() Manager {
 	initialize()
 	return manager
 }
