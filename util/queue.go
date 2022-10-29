@@ -14,6 +14,10 @@ func (q *Queue[T]) Poll() T {
 	return elem
 }
 
+func (q *Queue[T]) Elements() []T {
+	return q.elements
+}
+
 func (q *Queue[T]) Size() int {
 	return len(q.elements)
 }

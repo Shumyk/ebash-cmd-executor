@@ -19,8 +19,10 @@ import (
 //	a. creating new VMs
 //	b. self-healing
 //	c. concurrent access
-type Manager struct {
-	vagrants []*aliveVagrant
+type Manager struct{ pool *pool }
+
+func NewManager() *Manager {
+	return &Manager{new(pool)}
 }
 
 func (vm *Manager) BringUpMachines() {
@@ -31,7 +33,7 @@ func (vm *Manager) BringUpMachines() {
 
 func initClient(vm *Manager, path string) {
 	aliveVagrant := &aliveVagrant{VagrantClient: newVagrantClient(path)}
-	vm.vagrants = append(vm.vagrants, aliveVagrant)
+	vm.pool.add(aliveVagrant)
 
 	aliveVagrant.up()
 	aliveVagrant.initSSHClient(aliveVagrant.sshConfig())
@@ -50,9 +52,9 @@ func (vm *Manager) Shutdown(ch chan<- bool) {
 	}
 
 	wg := new(sync.WaitGroup)
-	wg.Add(len(vm.vagrants))
+	wg.Add(vm.pool.size())
 
-	for _, v := range vm.vagrants {
+	for _, v := range vm.pool.elements() {
 		go v.definitelyHalt(wg)
 	}
 

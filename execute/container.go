@@ -29,10 +29,10 @@ func initialize() {
 	case "native":
 		manager, executor = new(common.VoidManager), new(native.Executor)
 	case "vagrant":
-		vagrantManager := new(vagrant.Manager)
+		vagrantManager := vagrant.NewManager()
 		manager, executor = vagrantManager, &vagrant.Executor{Manager: vagrantManager}
 	case "vagrant-ssh":
-		vagrantManager := new(vagrant.Manager)
+		vagrantManager := vagrant.NewManager()
 		manager, executor = vagrantManager, &vagrant.SSHExecutor{Manager: vagrantManager}
 	case "docker":
 		// TODO

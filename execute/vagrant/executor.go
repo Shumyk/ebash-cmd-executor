@@ -8,8 +8,7 @@ import (
 type Executor struct{ *Manager }
 
 func (e *Executor) Execute(command string) *common.CommandOutput {
-	v := e.vagrants[0] // TODO: this should be changed when vm pool
-
+	v := e.pool.vagrant()
 	session := v.session()
 	defer session.Close()
 
@@ -17,5 +16,10 @@ func (e *Executor) Execute(command string) *common.CommandOutput {
 	session.Stdout, session.Stderr = stdout, stderr
 	err := session.Run(command)
 
-	return &common.CommandOutput{Command: command, Stdout: stdout.String(), Stderr: stderr.String(), Error: err}
+	return &common.CommandOutput{
+		Command: command,
+		Stdout:  stdout.String(),
+		Stderr:  stderr.String(),
+		Error:   err,
+	}
 }
