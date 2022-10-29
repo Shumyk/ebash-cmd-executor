@@ -21,7 +21,7 @@ func Server() *http.Server {
 
 func setupRouter() *gin.Engine {
 	router := gin.Default()
-
+	setup()
 	router.GET("/ping", pingGET)
 	router.POST("/execute", executePOST)
 	println()

@@ -10,7 +10,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var executor execute.Executor = execute.ProvideExecutor()
+var executor execute.Executor
+
+func setup() {
+	executor = execute.ProvideExecutor()
+}
 
 func pingGET(context *gin.Context) {
 	context.String(http.StatusOK, "pong")
