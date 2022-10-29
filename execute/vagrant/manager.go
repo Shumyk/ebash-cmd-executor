@@ -1,4 +1,4 @@
-package execute
+package vagrant
 
 import (
 	"ebash/cmd-executor/config"
@@ -19,17 +19,17 @@ import (
 //	a. creating new VMs
 //	b. self-healing
 //	c. concurrent access
-type VagrantManager struct {
+type Manager struct {
 	vagrants []*AliveVagrant
 }
 
-func (vm *VagrantManager) BringUpMachines() {
+func (vm *Manager) BringUpMachines() {
 	for _, path := range config.Vagrant().Vagrantfiles {
 		go initClient(vm, path)
 	}
 }
 
-func initClient(vm *VagrantManager, path string) {
+func initClient(vm *Manager, path string) {
 	aliveVagrant := &AliveVagrant{VagrantClient: newVagrantClient(path)}
 	vm.vagrants = append(vm.vagrants, aliveVagrant)
 
@@ -42,7 +42,7 @@ func newVagrantClient(path string) *vagrant.VagrantClient {
 	return util.Cautiosly(vagrant.NewVagrantClient(path))("vagrant create client")
 }
 
-func (vm *VagrantManager) Shutdown(ch chan<- bool) {
+func (vm *Manager) Shutdown(ch chan<- bool) {
 	if !config.Vagrant().Halt {
 		log.Println("vagrant halt is disabled")
 		ch <- false

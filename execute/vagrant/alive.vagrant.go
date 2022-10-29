@@ -1,4 +1,4 @@
-package execute
+package vagrant
 
 import (
 	"ebash/cmd-executor/config"

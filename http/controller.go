@@ -3,14 +3,15 @@ package http
 import (
 	dto "ebash/cmd-executor/communication"
 	"ebash/cmd-executor/execute"
-	persistant "ebash/cmd-executor/persistance"
+	"ebash/cmd-executor/execute/abstract"
+	persistent "ebash/cmd-executor/persistance"
 	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-var executor execute.Executor
+var executor abstract.Executor
 
 func setup() {
 	executor = execute.ProvideExecutor()
@@ -28,7 +29,7 @@ func executePOST(context *gin.Context) {
 	}
 
 	output := executor.Execute(request.Command)
-	go persistant.PersistCommand(output)
+	go persistent.PersistCommand(output)
 
 	context.JSON(http.StatusOK, dto.SuccessExecuteResponse(output))
 }

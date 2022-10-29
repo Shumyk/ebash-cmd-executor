@@ -1,7 +1,8 @@
-package execute
+package vagrant
 
 import (
 	"ebash/cmd-executor/config"
+	"ebash/cmd-executor/execute/common"
 	"ebash/cmd-executor/util"
 	"log"
 
@@ -28,13 +29,9 @@ func (v *AliveVagrant) SSHConfig() *vagrant.SSHConfig {
 }
 
 func (v *AliveVagrant) initSSHClient(c *vagrant.SSHConfig) {
-	v.Client = CreateSSHClient(c.IdentityFile, c.User, c.HostName, c.Port)
+	v.Client = common.CreateSSHClient(c.IdentityFile, c.User, c.HostName, c.Port)
 }
 
 func (v *AliveVagrant) Session() *ssh.Session {
-	return v.newSession()
-}
-
-func (v *AliveVagrant) newSession() *ssh.Session {
 	return util.Cautiosly(v.Client.NewSession())("create new vagrant session")
 }

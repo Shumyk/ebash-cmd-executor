@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	exeManager := exe.InitializeExecutors()
+	exeManager := exe.ProvideManager()
 	go exeManager.BringUpMachines()
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)

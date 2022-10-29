@@ -1,4 +1,4 @@
-package execute
+package common
 
 import (
 	"ebash/cmd-executor/util"
@@ -17,7 +17,7 @@ func CreateSSHClient(identityFilePath, user, hostname string, port int) *ssh.Cli
 }
 
 func BuildClientConfig(identityFilePath, user string) *ssh.ClientConfig {
-	privateKey := util.Cautiosly(os.ReadFile(identityFilePath))("read ssh indentity file")
+	privateKey := util.Cautiosly(os.ReadFile(identityFilePath))("read ssh identity file")
 	signer := util.Cautiosly(ssh.ParsePrivateKey(privateKey))("parse ssh private key")
 	return &ssh.ClientConfig{
 		User:            user,
