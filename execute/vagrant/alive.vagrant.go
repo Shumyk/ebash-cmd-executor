@@ -15,14 +15,13 @@ type aliveVagrant struct {
 	*ssh.Client
 }
 
-// Up TODO: change publicity to private
-func (v *aliveVagrant) Up() {
+func (v *aliveVagrant) up() {
 	up := v.VagrantClient.Up()
 	up.Verbose = config.Vagrant().Verbose
 	util.Panically(up.Run(), "vagrant up")
 }
 
-func (v *aliveVagrant) Status() {
+func (v *aliveVagrant) status() {
 	defer util.Timer("vagrant status")()
 
 	status := v.VagrantClient.Status()
@@ -36,23 +35,23 @@ func (v *aliveVagrant) Status() {
 	}
 }
 
-func (v *aliveVagrant) DefinitelyHalt(wg *sync.WaitGroup) {
-	if err := v.Halt(); err != nil {
+func (v *aliveVagrant) definitelyHalt(wg *sync.WaitGroup) {
+	if err := v.halt(); err != nil {
 		log.Printf("coudn't halt vagrant %v", v.VagrantClient.VagrantfileDir)
-		util.Panically(v.ForceHalt(), "vagrant force halt")
+		util.Panically(v.forceHalt(), "vagrant force halt")
 	}
 	wg.Done()
 }
 
-func (v *aliveVagrant) Halt() error {
+func (v *aliveVagrant) halt() error {
 	log.Printf("halting vagrant [%v]", v.VagrantClient.VagrantfileDir)
 	halt := v.VagrantClient.Halt()
 	halt.Verbose = config.Vagrant().Verbose
 	return halt.Run()
 }
 
-// ForceHalt TODO: maybe creating vagrant command could be abstracted with closure to simplify verbose set
-func (v *aliveVagrant) ForceHalt() error {
+// forceHalt TODO: maybe creating vagrant command could be abstracted with closure to simplify verbose set
+func (v *aliveVagrant) forceHalt() error {
 	log.Printf("force halting vagrant %v", v.VagrantClient.VagrantfileDir)
 	forceHalt := v.VagrantClient.Halt()
 	forceHalt.Verbose = config.Vagrant().Verbose

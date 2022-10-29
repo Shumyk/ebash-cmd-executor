@@ -33,9 +33,9 @@ func initClient(vm *Manager, path string) {
 	aliveVagrant := &aliveVagrant{VagrantClient: newVagrantClient(path)}
 	vm.vagrants = append(vm.vagrants, aliveVagrant)
 
-	aliveVagrant.Up()
-	aliveVagrant.initSSHClient(aliveVagrant.SSHConfig())
-	// aliveVagrant.Status()
+	aliveVagrant.up()
+	aliveVagrant.initSSHClient(aliveVagrant.sshConfig())
+	// aliveVagrant.status()
 }
 
 func newVagrantClient(path string) *vagrant.VagrantClient {
@@ -53,7 +53,7 @@ func (vm *Manager) Shutdown(ch chan<- bool) {
 	wg.Add(len(vm.vagrants))
 
 	for _, v := range vm.vagrants {
-		go v.DefinitelyHalt(wg)
+		go v.definitelyHalt(wg)
 	}
 
 	wg.Wait()

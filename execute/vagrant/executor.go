@@ -10,7 +10,7 @@ type Executor struct{ *Manager }
 func (e *Executor) Execute(command string) *common.CommandOutput {
 	v := e.vagrants[0] // TODO: this should be changed when vm pool
 
-	session := v.Session()
+	session := v.session()
 	defer session.Close()
 
 	stdout, stderr := &bytes.Buffer{}, &bytes.Buffer{}
