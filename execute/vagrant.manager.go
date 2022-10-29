@@ -23,10 +23,6 @@ type VagrantManager struct {
 	vagrants []*AliveVagrant
 }
 
-func NewVagrantManager() *VagrantManager {
-	return new(VagrantManager)
-}
-
 func (vm *VagrantManager) BringUpMachines() {
 	for _, path := range config.Vagrant().Vagrantfiles {
 		go initClient(vm, path)

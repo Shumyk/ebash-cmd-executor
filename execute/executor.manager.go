@@ -20,12 +20,13 @@ func InitializeExecutors() ExecutorManager {
 
 	switch runOn := config.Vms().RunOn; runOn {
 	case "native":
+		executorManager = new(VoidManager)
 		singletonExecutor = NewNativeExecutor()
 	case "vagrant":
-		vagrantManager := NewVagrantManager()
+		vagrantManager := new(VagrantManager)
 		executorManager, singletonExecutor = vagrantManager, NewVagrantExecutor(vagrantManager)
 	case "vagrant-ssh":
-		vagrantManager := NewVagrantManager()
+		vagrantManager := new(VagrantManager)
 		executorManager, singletonExecutor = vagrantManager, NewVagrantSSHExecutor(vagrantManager)
 	case "docker":
 		// TODO
