@@ -6,6 +6,7 @@ require (
 	github.com/bmatcuk/go-vagrant v1.6.0
 	github.com/gin-gonic/gin v1.8.1
 	golang.org/x/crypto v0.0.0-20221012134737-56aed061732a
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
@@ -25,5 +26,4 @@ require (
 	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
