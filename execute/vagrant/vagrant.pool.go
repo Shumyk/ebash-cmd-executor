@@ -1,5 +1,10 @@
 package vagrant
 
+// pool TODO: 1. VMs pool functionality:
+//
+//	a. creating new VMs
+//	b. self-healing
+//	c. concurrent access
 type pool struct {
 	vagrants []*aliveVagrant
 }

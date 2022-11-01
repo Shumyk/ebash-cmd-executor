@@ -11,12 +11,6 @@ import (
 
 // TODO: 3. vagrant add boxes (?)
 // TODO: 4. test async vagrant halt with multiple instances
-
-// Manager TODO: 7. VMs pool functionality:
-//
-//	a. creating new VMs
-//	b. self-healing
-//	c. concurrent access
 type Manager struct{ pool *pool }
 
 func NewManager() *Manager {
