@@ -9,6 +9,12 @@ type pool struct {
 	vagrants []*aliveVagrant
 }
 
+// TODO: should be used for load-balancer
+type vagrantContainer struct {
+	vagrant      *aliveVagrant
+	openSessions int
+}
+
 func (p *pool) add(e ...*aliveVagrant) {
 	p.vagrants = append(p.vagrants, e...)
 }
